@@ -2,15 +2,16 @@ package asciiart
 
 import (
 	"bytes"
-	"fmt"
 	"image"
 	"image/color"
 	_ "image/jpeg"
+	_ "image/png"
 	"math"
 )
 
 const charOptions = " .:-=+*#%@"
 
+// FromImageBuffer returns an ascii image as a slice of bytes.
 func FromImageBuffer(width, height int, imageBytes []byte) ([]byte, error) {
 	resizer := NewVipsResizer()
 	resizedImage, err := resizer.Resize(width, height, imageBytes)
@@ -23,28 +24,33 @@ func FromImageBuffer(width, height int, imageBytes []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	art := make([]byte, 0)
 	imageWidth := decodedImage.Bounds().Size().X
 	imageHeight := decodedImage.Bounds().Size().Y
 	for x := 0; x < imageWidth; x++ {
 		for y := 0; y < imageHeight; y++ {
 			grayScalePixel := color.GrayModel.Convert(decodedImage.At(x, y))
 			pixelLightness := getLightness(grayScalePixel)
-			fmt.Printf("Lightness at %v, %v, is: %v\n", x, y, pixelLightness)
+			// better way to map between 0.0-1.0 and 0 and 9?
+			if pixelLightness >= 1.0 {
+				pixelLightness = 0.9
+			}
+			charIndex := uint8(pixelLightness * 10)
+			art = append(art, charOptions[charIndex])
 		}
+		art = append(art, '\n')
 	}
-	return imageBytes, nil
+	return art, nil
 }
 
 // Get the lightness of a colour, based on this source:
 // https://stackoverflow.com/a/56678483/6308012
 func getLightness(c color.Color) float64 {
-	// TODO: ofc this is borked because color.RGBA returns the alpha premultiplied values
-	// Need to truncate them down to the last byte of the value, or just replace the
-	// first byte with 0's? Does it matter if we just divide by 255 and put it in a float64 after?
+	// TODO: this feels gross, make sure I'm not doing something silly here.
 	r, g, b, _ := c.RGBA()
-	linR := sRGBtoLin(float64(r / 255))
-	linG := sRGBtoLin(float64(g / 255))
-	linB := sRGBtoLin(float64(b / 255))
+	linR := sRGBtoLin(float64(float32(uint8(r)) / 255))
+	linG := sRGBtoLin(float64(float32(uint8(g)) / 255))
+	linB := sRGBtoLin(float64(float32(uint8(b)) / 255))
 
 	return 0.2126*linR + 0.7152*linG + 0.0722*linB
 }

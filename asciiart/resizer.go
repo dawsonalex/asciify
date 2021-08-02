@@ -23,7 +23,7 @@ func (resizer vipsResizer) Resize(maxWidth, maxHeight int, imageBuffer []byte) (
 		return nil, err
 	}
 
-	err = vipsImage.Resize(0.5, vips.KernelAuto)
+	err = vipsImage.Resize(0.2, vips.KernelAuto)
 
 	resizedBytes, _, err := vipsImage.ExportJpeg(vips.NewJpegExportParams())
 	if err != nil {
