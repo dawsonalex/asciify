@@ -27,8 +27,8 @@ func FromImageBuffer(width, height int, imageBytes []byte) ([]byte, error) {
 	art := make([]byte, 0)
 	imageWidth := decodedImage.Bounds().Size().X
 	imageHeight := decodedImage.Bounds().Size().Y
-	for x := 0; x < imageWidth; x++ {
-		for y := 0; y < imageHeight; y++ {
+	for y := 0; y < imageHeight; y++ {
+		for x := 0; x < imageWidth; x++ {
 			grayScalePixel := color.GrayModel.Convert(decodedImage.At(x, y))
 			pixelLightness := getLightness(grayScalePixel)
 			// better way to map between 0.0-1.0 and 0 and 9?
