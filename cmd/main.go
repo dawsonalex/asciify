@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"image2ascii/asciiart"
 	"io/ioutil"
+	"os"
 )
 
 func main() {
-	fmt.Println("Hello, World")
-
-	imageBytes, err := ioutil.ReadFile("/home/ad/go/src/image2ascii/cmd/image.png")
+	imagePath := os.Args[1]
+	fmt.Printf("image path: %v\n", imagePath)
+	imageBytes, err := ioutil.ReadFile(imagePath)
 	if err != nil {
 		fmt.Println("error reading file: ", err)
 		return
