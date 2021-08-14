@@ -26,13 +26,13 @@ func (resizer vipsResizer) Resize(maxWidth, maxHeight int, imageBuffer []byte) (
 
 	hScale, vScale := 1.0, 1.0
 	if vipsImage.Width() > maxWidth {
-		hScale = float64(vipsImage.Width() / maxWidth)
+		hScale = float64(maxWidth) / float64(vipsImage.Width())
 	}
 
 	if vipsImage.Height() > maxHeight {
-		vScale = float64(vipsImage.Height() / maxHeight)
+		vScale = float64(maxHeight) / float64(vipsImage.Height())
 	}
-	err = vipsImage.ResizeWithVScale(hScale, vScale, vips.KernelAuto)
+	err = vipsImage.ResizeWithVScale(hScale, vScale, vips.KernelCubic)
 
 	resizedBytes, _, err := vipsImage.ExportJpeg(vips.NewJpegExportParams())
 	if err != nil {
