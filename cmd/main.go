@@ -1,8 +1,8 @@
 package main
 
 import (
+	"asciify"
 	"fmt"
-	"image2ascii/asciiart"
 	"io/ioutil"
 	"os"
 )
@@ -16,7 +16,7 @@ func main() {
 		return
 	}
 
-	art, err := asciiart.FromImageBuffer(10, 1, imageBytes)
+	art, err := asciify.FromImageBuffer(10, 1, imageBytes)
 	if err != nil {
 		fmt.Println(err)
 		return

@@ -1,4 +1,4 @@
-package asciiart
+package asciify
 
 import (
 	"github.com/davidbyttow/govips/v2/vips"

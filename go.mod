@@ -1,4 +1,4 @@
-module image2ascii
+module asciify
 
 go 1.16
 
