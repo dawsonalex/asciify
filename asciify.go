@@ -2,6 +2,7 @@ package asciify
 
 import (
 	"bytes"
+	"github.com/davidbyttow/govips/v2/vips"
 	"image"
 	"image/color"
 	_ "image/jpeg"
@@ -10,6 +11,57 @@ import (
 )
 
 const charOptions = " .:-=+*#%@"
+
+type Resizer func(maxWidth, maxHeight int, imageBuffer []byte) ([]byte, error)
+
+type PixelMapper func(c color.Color, x, y int) byte
+
+type Renderer struct {
+	resize   Resizer
+	mapPixel PixelMapper
+}
+
+func NewRenderer() *Renderer {
+	return &Renderer{
+		resize:   DefaultResizer(),
+		mapPixel: DefaultPixelMappper(),
+	}
+}
+
+func DefaultResizer() Resizer {
+	return func(maxWidth, maxHeight int, imageBuffer []byte) ([]byte, error) {
+		vips.Startup(nil)
+		defer vips.Shutdown()
+
+		vipsImage, err := vips.NewImageFromBuffer(imageBuffer)
+		if err != nil {
+			return nil, err
+		}
+		// TODO: use maxWidth and maxHeight to calculate the scale for the image.
+
+		hScale, vScale := 1.0, 1.0
+		if vipsImage.Width() > maxWidth {
+			hScale = float64(maxWidth) / float64(vipsImage.Width())
+		}
+
+		if vipsImage.Height() > maxHeight {
+			vScale = float64(maxHeight) / float64(vipsImage.Height())
+		}
+		err = vipsImage.ResizeWithVScale(hScale, vScale, vips.KernelCubic)
+
+		resizedBytes, _, err := vipsImage.ExportJpeg(vips.NewJpegExportParams())
+		if err != nil {
+			return nil, err
+		}
+
+		return resizedBytes, nil
+	}
+}
+
+// TOOD: migrate below logic to this function
+func DefaultPixelMappper() PixelMapper {
+
+}
 
 // FromImageBuffer returns an ascii image as a slice of bytes.
 func FromImageBuffer(width, height int, imageBytes []byte) ([]byte, error) {

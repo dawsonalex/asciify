@@ -4,9 +4,9 @@ import (
 	"github.com/davidbyttow/govips/v2/vips"
 )
 
-type Resizer interface {
-	Resize(maxWidth, maxHeight int, imageBuffer []byte) ([]byte, error)
-}
+//type Resizer interface {
+//	Resize(maxWidth, maxHeight int, imageBuffer []byte) ([]byte, error)
+//}
 
 type vipsResizer struct{}
 
