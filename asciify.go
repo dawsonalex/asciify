@@ -1,6 +1,7 @@
 package asciify
 
 import (
+	"asciify/resize"
 	"bytes"
 	"github.com/davidbyttow/govips/v2/vips"
 	"image"
@@ -10,25 +11,52 @@ import (
 	"math"
 )
 
-const charOptions = " .:-=+*#%@"
-
-type Resizer func(maxWidth, maxHeight int, imageBuffer []byte) ([]byte, error)
-
 type PixelMapper func(c color.Color, x, y int) byte
 
 type Renderer struct {
-	resize   Resizer
+	resize   resize.Resizer
 	mapPixel PixelMapper
+}
+
+func (r Renderer) RenderFromBuffer(buf []byte, options *resize.Options) ([]byte, error) {
+	originImage, _, err := image.Decode(bytes.NewBuffer(buf))
+	if err != nil {
+		return nil, err
+	}
+	width, height, err := r.resolveSize(originImage.Bounds(), options)
+	if err != nil {
+		return nil, err
+	}
+
+	resizedImage, err := r.resize(width, height, buf)
+	if err != nil {
+		return nil, err
+	}
+
+	scaledImage, _, err := image.Decode(bytes.NewBuffer(resizedImage))
+	if err != nil {
+		return nil, err
+	}
+	art := make([]byte, 0)
+	imageWidth := scaledImage.Bounds().Size().X
+	imageHeight := scaledImage.Bounds().Size().Y
+	for y := 0; y < imageHeight; y++ {
+		for x := 0; x < imageWidth; x++ {
+			art = append(art, r.mapPixel(scaledImage.At(x, y), x, y))
+		}
+		art = append(art, '\n')
+	}
+	return art, nil
 }
 
 func NewRenderer() *Renderer {
 	return &Renderer{
 		resize:   DefaultResizer(),
-		mapPixel: DefaultPixelMappper(),
+		mapPixel: DefaultPixelMapper(),
 	}
 }
 
-func DefaultResizer() Resizer {
+func DefaultResizer() resize.Resizer {
 	return func(maxWidth, maxHeight int, imageBuffer []byte) ([]byte, error) {
 		vips.Startup(nil)
 		defer vips.Shutdown()
@@ -37,7 +65,6 @@ func DefaultResizer() Resizer {
 		if err != nil {
 			return nil, err
 		}
-		// TODO: use maxWidth and maxHeight to calculate the scale for the image.
 
 		hScale, vScale := 1.0, 1.0
 		if vipsImage.Width() > maxWidth {
@@ -59,40 +86,19 @@ func DefaultResizer() Resizer {
 }
 
 // TOOD: migrate below logic to this function
-func DefaultPixelMappper() PixelMapper {
+func DefaultPixelMapper() PixelMapper {
+	return func(c color.Color, x, y int) byte {
+		const charOptions = " .:-=+*#%@"
 
-}
-
-// FromImageBuffer returns an ascii image as a slice of bytes.
-func FromImageBuffer(width, height int, imageBytes []byte) ([]byte, error) {
-	resizer := NewVipsResizer()
-	resizedImage, err := resizer.Resize(width, height, imageBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	decodedImage, _, err := image.Decode(bytes.NewBuffer(resizedImage))
-	if err != nil {
-		return nil, err
-	}
-
-	art := make([]byte, 0)
-	imageWidth := decodedImage.Bounds().Size().X
-	imageHeight := decodedImage.Bounds().Size().Y
-	for y := 0; y < imageHeight; y++ {
-		for x := 0; x < imageWidth; x++ {
-			grayScalePixel := color.GrayModel.Convert(decodedImage.At(x, y))
-			pixelLightness := getLightness(grayScalePixel)
-			// better way to map between 0.0-1.0 and 0 and 9?
-			if pixelLightness >= 1.0 {
-				pixelLightness = 0.9
-			}
-			charIndex := uint8(pixelLightness * 10)
-			art = append(art, charOptions[charIndex])
+		grayScalePixel := color.GrayModel.Convert(c)
+		pixelLightness := getLightness(grayScalePixel)
+		// better way to map between 0.0-1.0 and 0 and 9?
+		if pixelLightness >= 1.0 {
+			pixelLightness = 0.9
 		}
-		art = append(art, '\n')
+		charIndex := uint8(pixelLightness * 10)
+		return charOptions[charIndex]
 	}
-	return art, nil
 }
 
 // Get the lightness of a colour, based on this source:
