@@ -8,54 +8,54 @@ import (
 type Strategy int
 
 const (
-	FixedSize Strategy = iota
-	Scale
-	Terminal
+	fixedSizeStrategy Strategy = iota
+	scaleStrategy
+	terminalStrategy
 )
 
-type Options struct {
+type options struct {
 	resizeStrategy Strategy
 	scale          float64
 	width          int
 	height         int
 }
 
-type Option func(options *Options)
+type Option func(options *options)
 
 func ToScale(scale float64) Option {
-	return func(options *Options) {
-		options.resizeStrategy = Scale
+	return func(options *options) {
+		options.resizeStrategy = scaleStrategy
 		options.scale = scale
 	}
 }
 
 func ToFixed(width, height int) Option {
-	return func(options *Options) {
-		options.resizeStrategy = FixedSize
+	return func(options *options) {
+		options.resizeStrategy = fixedSizeStrategy
 		options.width = width
 		options.height = height
 	}
 }
 
 func ToTerminal() Option {
-	return func(options *Options) {
-		options.resizeStrategy = Terminal
+	return func(options *options) {
+		options.resizeStrategy = terminalStrategy
 	}
 }
 
 // Buffer resizes an image in a byte buffer using the options provided.
 func Buffer(img []byte, optionSetter Option) ([]byte, error) {
-	options := &Options{
-		resizeStrategy: Terminal,
+	options := &options{
+		resizeStrategy: terminalStrategy,
 	}
 	optionSetter(options)
 
 	switch options.resizeStrategy {
-	case FixedSize:
+	case fixedSizeStrategy:
 		return doFixedResize(img, options.width, options.height)
-	case Scale:
+	case scaleStrategy:
 		return doScaledResize(img, options.scale)
-	case Terminal:
+	case terminalStrategy:
 		if width, height, err := getTerminalSize(); err == nil {
 			return doFixedResize(img, width, height)
 		} else {
