@@ -13,26 +13,50 @@ const (
 	Terminal
 )
 
-// Resizer takes an image and resizes it based on a chosen strategy.
-type Resizer struct {
-	terminal terminal.Terminal
-}
-
 type Options struct {
 	resizeStrategy Strategy
-	Scale          float64
-	Width          int
-	Height         int
+	scale          float64
+	width          int
+	height         int
 }
 
-func (r Resizer) Resize(img []byte, options *Options) ([]byte, error) {
+type Option func(options *Options)
+
+func ToScale(scale float64) Option {
+	return func(options *Options) {
+		options.resizeStrategy = Scale
+		options.scale = scale
+	}
+}
+
+func ToFixed(width, height int) Option {
+	return func(options *Options) {
+		options.resizeStrategy = FixedSize
+		options.width = width
+		options.height = height
+	}
+}
+
+func ToTerminal() Option {
+	return func(options *Options) {
+		options.resizeStrategy = Terminal
+	}
+}
+
+// Buffer resizes an image in a byte buffer using the options provided.
+func Buffer(img []byte, optionSetter Option) ([]byte, error) {
+	options := &Options{
+		resizeStrategy: Terminal,
+	}
+	optionSetter(options)
+
 	switch options.resizeStrategy {
 	case FixedSize:
-		return doFixedResize(img, options.Width, options.Height)
+		return doFixedResize(img, options.width, options.height)
 	case Scale:
-		return doScaledResize(img, options.Scale)
+		return doScaledResize(img, options.scale)
 	case Terminal:
-		if width, height, err := r.getTerminalSize(); err == nil {
+		if width, height, err := getTerminalSize(); err == nil {
 			return doFixedResize(img, width, height)
 		} else {
 			return nil, err
@@ -42,21 +66,11 @@ func (r Resizer) Resize(img []byte, options *Options) ([]byte, error) {
 	}
 }
 
-func (r Resizer) getTerminalSize() (int, int, error) {
+func getTerminalSize() (int, int, error) {
 	t := terminal.NewTerminalAccessor()
 	if width, height, err := t.ScreenSize(); err == nil {
 		return width, height, nil
 	} else {
 		return 0, 0, err
 	}
-}
-
-func doFixedResize(img []byte, width, height int) ([]byte, error) {
-	// TODO: Add logic for this.
-	return nil, nil
-}
-
-func doScaledResize(img []byte, ratio float64) ([]byte, error) {
-	// TODO: Add logic for this.
-	return nil, nil
 }
