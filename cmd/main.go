@@ -57,7 +57,12 @@ func main() {
 
 	if len(outputFilename) > 0 {
 		outputFile, err := os.Create(outputFilename)
-		defer outputFile.Close()
+		defer func(outputFile *os.File) {
+			err := outputFile.Close()
+			if err != nil {
+				fmt.Printf("error closing %s: %v", outputFilename, err)
+			}
+		}(outputFile)
 		if err == nil {
 			_, err = outputFile.Write(art)
 			if err != nil {
