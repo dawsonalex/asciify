@@ -40,7 +40,6 @@ jobs:
 
     - name: Release
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
       with:
         tag_name: ${{ steps.bump_version.new_tag }}
         files: asciify
