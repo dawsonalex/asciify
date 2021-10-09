@@ -4,9 +4,9 @@ Generate ASCII art from images.
 
 ## Build
 
-``shell
+```shell
 go build -tags vips -o asciify cmd/main.go
-``
+````
 
 ## Run
 
