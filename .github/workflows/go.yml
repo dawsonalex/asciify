@@ -30,13 +30,12 @@ jobs:
     - name: Build
       run: go build -v -tags vips -o asciify cmd/main.go
 
-    - uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: false
-        automatic_release_tag: "latest"
-        files: |
-          asciify
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: false
+        DEFAULT_BUMP: none
 
 #     - name: Test
 #       run: go test -v ./...
