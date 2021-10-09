@@ -91,7 +91,7 @@ func getResizeOptions() resize.Option {
 
 func usage() {
 	fmt.Fprintf(os.Stderr, `=======
-asciify v1.0.0
+asciify
 =======
 Usage: asciify -f <filename> [-w <width> -g <height>]
 Options:
