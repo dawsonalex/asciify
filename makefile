@@ -9,7 +9,7 @@ arch = $(word 2, $(temp))
 clean:
 	rm -rv bin
 
-PLATFORMS := linux/amd64 windows/amd64 darwin/amd64 darwin/arm64
+PLATFORMS := linux/amd64
 
 release: $(PLATFORMS)
 
