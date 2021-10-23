@@ -1,23 +1,35 @@
 package asciify
 
 import (
-	"bytes"
+	"github.com/stretchr/testify/assert"
+	"image/color"
 	"testing"
 )
 
 func TestLightness(t *testing.T) {
-	input := []byte{0, 255, 0, 255}
-
-	output, err := FromImageBuffer(2, 2, input)
-	if err != nil {
-		t.Error(err)
-		return
+	type testCase struct {
+		name              string
+		c                 color.Color
+		expectedLightness float64
 	}
 
-	expected := []byte{charOptions[0], charOptions[9], charOptions[0], charOptions[9]}
+	tests := []testCase{
+		{
+			name:              "Test with Black",
+			c:                 color.Black,
+			expectedLightness: 0.0,
+		},
+		{
+			name:              "Test with White",
+			c:                 color.White,
+			expectedLightness: 1.0,
+		},
+	}
 
-	if res := bytes.Compare(output, expected); res != 0 {
-		t.Errorf("expected: %v, got: %v", expected, output)
-		return
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			lightness := getLightness(test.c)
+			assert.InDelta(t, test.expectedLightness, lightness, 0.01)
+		})
 	}
 }
