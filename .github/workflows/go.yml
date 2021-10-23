@@ -20,12 +20,12 @@ jobs:
 
       - name: Set up libde265
         run: sudo add-apt-repository -y ppa:strukturag/libde265
-          - name: Set up libheif
-            run: sudo add-apt-repository -y ppa:strukturag/libheif
-          - name: Set up ppa:tonimelisma/ppa
-            run: sudo add-apt-repository -y ppa:tonimelisma/ppa
-          - name: Install libvips-dev
-            run: sudo apt -y install libvips-dev
+      - name: Set up libheif
+        run: sudo add-apt-repository -y ppa:strukturag/libheif
+      - name: Set up ppa:tonimelisma/ppa
+        run: sudo add-apt-repository -y ppa:tonimelisma/ppa
+      - name: Install libvips-dev
+        run: sudo apt -y install libvips-dev
 
       - name: Test
         run: go test -v ./...
