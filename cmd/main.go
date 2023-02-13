@@ -5,7 +5,6 @@ import (
 	"asciify/resize"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -35,7 +34,7 @@ func init() {
 func main() {
 	flag.Parse()
 	checkArgs()
-	imageBytes, err := ioutil.ReadFile(imageFilename)
+	imageBytes, err := os.ReadFile(imageFilename)
 	if err != nil {
 		fmt.Println("error reading file: ", err)
 		return
@@ -76,7 +75,7 @@ func main() {
 
 func checkArgs() {
 	if outputWidth != outputHeight && (outputWidth == -1 || outputHeight == -1) {
-		fmt.Println("Please specify both a width and height, or neither")
+		_, _ = fmt.Println("Please specify both a width and height, or neither")
 		os.Exit(1)
 	}
 }
@@ -90,7 +89,7 @@ func getResizeOptions() resize.Option {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `=======
+	_, _ = fmt.Fprintf(os.Stderr, `=======
 asciify
 =======
 Usage: asciify -f <filename> [-w <width> -g <height>]
