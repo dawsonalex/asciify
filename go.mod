@@ -9,5 +9,5 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
+	golang.org/x/net v0.7.0 // indirect
 )
