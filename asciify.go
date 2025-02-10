@@ -29,9 +29,18 @@ func RenderFromBuffer(buf []byte, pixelMapper PixelMapper) ([]byte, error) {
 }
 
 func DefaultPixelMapper() PixelMapper {
-	return func(c color.Color, x, y int) byte {
-		const charOptions = " .:-=+*#%@"
+	return CharSetMapper(CharsetDarkToLight)
+}
 
+type Charset string
+
+const (
+	CharsetDarkToLight Charset = " .:-=+*#%@"
+	CharsetLightToDark Charset = "@%#*+=-:. "
+)
+
+func CharSetMapper(charset Charset) PixelMapper {
+	return func(c color.Color, x, y int) byte {
 		grayScalePixel := color.GrayModel.Convert(c)
 		pixelLightness := getLightness(grayScalePixel)
 		// better way to map between 0.0-1.0 and 0 and 9?
@@ -39,7 +48,7 @@ func DefaultPixelMapper() PixelMapper {
 			pixelLightness = 0.9
 		}
 		charIndex := uint8(pixelLightness * 10)
-		return charOptions[charIndex]
+		return charset[charIndex]
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 
 var imageFilename, outputFilename string
 var outputWidth, outputHeight int
+var invertLightness bool
 
 func init() {
 	flag.StringVar(&imageFilename,
@@ -28,6 +29,10 @@ func init() {
 		"g",
 		-1,
 		"Height of the image output")
+	flag.BoolVar(&invertLightness,
+		"i",
+		false,
+		"Invert the lightness of output")
 	flag.Usage = usage
 }
 
@@ -47,7 +52,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	art, err := asciify.RenderFromBuffer(resizedImage, asciify.DefaultPixelMapper())
+	charset := asciify.CharsetDarkToLight
+	if invertLightness {
+		charset = asciify.CharsetLightToDark
+	}
+	art, err := asciify.RenderFromBuffer(resizedImage, asciify.CharSetMapper(charset))
 	if err != nil {
 		fmt.Println(err)
 		return
