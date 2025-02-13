@@ -1,0 +1,29 @@
+{
+  "branches": ["master"],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          { "type": "fix", "release": "patch" },
+          { "type": "patch", "release": "patch" },
+          { "type": "#patch", "release": "patch" },
+          { "type": "feat", "release": "minor" },
+          { "type": "#minor", "release": "minor" },
+          { "type": "feature", "release": "minor" },
+          { "type": "BREAKING CHANGE", "release": "major" },
+          { "type": "major", "release": "major" }
+          { "type": "#major", "release": "major" }
+        ],
+        "parserOpts": {
+          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+        }
+      }
+    ],
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/github",
+    "@semantic-release/git"
+  ]
+}
