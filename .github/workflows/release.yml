@@ -50,7 +50,7 @@ jobs:
 
       - name: Install semantic-release
         run: |
-          curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+          curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
           sudo apt-get install -y nodejs
           npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
 
