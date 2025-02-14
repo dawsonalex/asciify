@@ -31,7 +31,7 @@
           ],
           "draftRelease": true
         }
-    ]
+    ],
     "@semantic-release/git"
   ]
 }
