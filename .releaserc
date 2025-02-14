@@ -13,7 +13,7 @@
           { "type": "#minor", "release": "minor" },
           { "type": "feature", "release": "minor" },
           { "type": "BREAKING CHANGE", "release": "major" },
-          { "type": "major", "release": "major" }
+          { "type": "major", "release": "major" },
           { "type": "#major", "release": "major" }
         ],
         "parserOpts": {
