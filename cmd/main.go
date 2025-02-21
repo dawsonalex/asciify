@@ -6,6 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime/debug"
+	"strings"
 )
 
 var imageFilename, outputFilename string
@@ -98,11 +100,20 @@ func getResizeOptions() resize.Option {
 }
 
 func usage() {
+	buildStr := "[NO BUILD INFO]"
+	if bi, ok := debug.ReadBuildInfo(); ok {
+		if bi.Main.Version[len(bi.Main.Version)-5:] == "dirty" {
+			buildStr = bi.Main.Version
+		} else {
+			buildStr = strings.Split(bi.Main.Version, "-")[0]
+		}
+	}
+
 	_, _ = fmt.Fprintf(os.Stderr, `=======
-asciify
+asciify %s
 =======
 Usage: asciify -f <filename> [-w <width> -g <height>]
 Options:
-`)
+`, buildStr)
 	flag.PrintDefaults()
 }
