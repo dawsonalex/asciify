@@ -3,9 +3,9 @@ module asciify
 go 1.24
 
 require (
-	github.com/davidbyttow/govips/v2 v2.7.0
+	github.com/davidbyttow/govips/v2 v2.16.0
 	github.com/qeesung/image2ascii v1.0.1
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.10.0
 )
 
 require (
@@ -13,9 +13,9 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0 // indirect
-	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
-	golang.org/x/sys v0.0.0-20210423082822-04245dca01da // indirect
-	golang.org/x/text v0.3.6 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
+	golang.org/x/image v0.18.0 // indirect
+	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
